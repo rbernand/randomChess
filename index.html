@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" ng-app>
+  <head>
+    <title>Random Chess Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
+    <style>
+      body {
+        padding-top: 60px;
+      }
+      
+      #chess {
+        width: 640px;
+        height: 640px;
+        margin: 0.5em;
+        border: 2px solid #808080;
+        text-align: center;
+        vertical-align: top;
+        line-height: 75px;
+      }
+
+      #chess div {
+        float: left;
+        width: 80px;
+        height: 80px;
+        background-color: #fff;
+        font-size: 60px;
+      }
+
+      #chess div:nth-child(-2n+8), 
+      #chess div:nth-child(8) ~ div:nth-child(-2n+15), 
+      #chess div:nth-child(16) ~ div:nth-child(-2n+24), 
+      #chess div:nth-child(24) ~ div:nth-child(-2n+31), 
+      #chess div:nth-child(32) ~ div:nth-child(-2n+40), 
+      #chess div:nth-child(40) ~ div:nth-child(-2n+47), 
+      #chess div:nth-child(48) ~ div:nth-child(-2n+56), 
+      #chess div:nth-child(56) ~ div:nth-child(-2n+63) {
+        background-color: #aaa;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar navbar-fixed-top navbar-inverse">
+        <div class="navbar-inner">
+          <div class="pull-right">
+            <a href="https://c9.io" class="brand">rBernand</a>
+          </div>
+        </div>
+      </div>
+      <div class="page-header">
+        <h1>Chat Example</h1>
+      </div>
+      <div class="row">
+        <div class="col-xs-1">
+          <div id="chess">
+              <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+        <div class="col-xs-1">
+          <button class="btn btn-success" type="button" onclick="placePiece()">Again</button>
+        </div>
+      </div>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/angular.min.js"></script>
+    <script>
+      function GenerateChess () {
+        function rand4 () {
+          function flip () {
+            return parseInt(Math.random() * 2, 10);
+          }
+          return (flip() == 0 ? 0 : 2) + (flip() == 0 ? 1 : 2) - 1;
+        }
+        function count_empty(arr, start, end) {
+          var nb = 0;
+          for (var i = start; i < end; i++) {
+            nb += (arr[i] == 0 ? 1 : 0);
+          }
+          return nb;
+        }
+        var arr = [0, 0, 0, 0, 0, 0, 0, 0];
+        arr[rand4() * 2] = 'f';
+        arr[rand4() * 2 + 1] = 'f';
+        var p_r = rand4() + 1;
+        while (arr[p_r] != 0) {
+          p_r++;
+        }
+        arr[p_r] = 'r';
+        var p_t;
+        for (p_t = rand4(); p_t >= count_empty(arr, 0, p_r) && p_t != 0; p_t = rand4()) {
+        }
+        while (arr[p_t] != 0) {
+          p_t++;
+        }
+        arr[p_t] = 't';
+        for (p_t = rand4(); p_t > count_empty(arr, p_r, 8); p_t = rand4()) {
+        }
+        while (arr[p_t + p_r] != 0) {
+          p_t++;
+        }
+        arr[p_t + p_r] = 't';
+        var p_d = rand4();
+        while (p_d == 3) {
+          p_d = rand4();
+        }
+        while (arr[p_d] != 0) {
+          p_d++;
+        }
+        arr[p_d] = 'd';
+        for (var i = 0; i < 8; i++) {
+          arr[i] = arr[i] == 0 ? 'c' : arr[i];
+        }
+        return arr;
+      }
+      function placePiece() {
+        pieces = {
+          'br': "&#9812;",
+          'bd': "&#9813;",
+          'bt': "&#9814;",
+          'bf': "&#9815;",
+          'bc': "&#9816;",
+          'bp': "&#9817;",
+          'nr': "&#9818;",
+          'nd': "&#9819;",
+          'nt': "&#9820;",
+          'nf': "&#9821;",
+          'nc': "&#9822;",
+          'np': "&#9823;",
+        }
+        for (var i = 8; i < 16; i++) {
+          $("#chess div")[i].innerHTML = pieces['np'];
+        }
+        for (var i = 48; i < 56; i++) {
+          $("#chess div")[i].innerHTML = pieces['bp'];
+        }
+        var random_pieces = GenerateChess();
+        for (var i = 56; i < 64; i++) {
+          $("#chess div")[i].innerHTML = pieces['b' + random_pieces[i - 56]];
+        }
+        for (var i = 0; i < 8; i++) {
+          $("#chess div")[i].innerHTML = pieces['n' + random_pieces[i]];
+        }
+      }
+      placePiece();
+    </script>
+  </body>
+</html>
